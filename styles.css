@@ -17,6 +17,9 @@
  footer{font-size:11px}.content-card p,.article p,.article li,.discussion-answer{font-size:14px}
 }
 main:focus{outline:none}
+.brand-logo{display:block;width:64px;height:64px;object-fit:contain;flex-shrink:0}
+@media(max-width:800px){.brand-logo{width:52px;height:52px}}
+@media(max-width:520px){.brand-logo{width:44px;height:44px}}
 .contact-placeholder{font-size:13px;line-height:1.7;color:var(--muted);margin:0 0 20px}
 .contact-details{display:grid;gap:14px;margin:18px 0 20px}
 .contact-details dt{font-size:11px;line-height:1.5;font-weight:700;color:var(--muted);margin-bottom:5px}
