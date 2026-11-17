@@ -99,7 +99,7 @@ function homePage() {
     ${panel('Key Contacts','users',contacts.map(c=>({title:c.title,href:`#contacts/${c.id}`,icon:'user'})))}
     <section class="panel panel-note"><div class="panel-head cream">${icon('info')}<h2>Clinical Note</h2></div><p>PACES supports knowledge sharing and non-urgent clarification. <strong>For urgent patient concerns, follow the existing clinical escalation pathway.</strong></p></section>
   </div>
-  <section class="knowledge-cycle" aria-label="Knowledge cycle"><div class="cycle-title">${icon('cycle')}<h2>Knowledge Cycle</h2></div><div class="cycle-steps">${[['Survey & Review','clipboard','#aar'],['Build Wiki','laptop','#resources'],['Use in Ward','bed','#care-guide'],['AAR / Q&A','chat','#forum'],['Update Wiki','cycle','#aar']].map((step,i)=>`${i ? '<span class="cycle-arrow" aria-hidden="true">→</span>' : ''}<a class="cycle-step" href="${step[2]}">${icon(step[1])}<span>${step[0]}</span></a>`).join('')}</div></section>`;
+  <section class="knowledge-cycle" aria-label="Knowledge cycle"><div class="cycle-title">${icon('cycle')}<h2>Knowledge Cycle</h2></div><div class="cycle-steps">${[['Survey & Review','clipboard'],['Build Wiki','laptop'],['Use in Ward','bed'],['AAR / Q&A','chat'],['Update Wiki','cycle']].map((step,i)=>`${i ? '<span class="cycle-arrow" aria-hidden="true">→</span>' : ''}<div class="cycle-step">${icon(step[1])}<span>${step[0]}</span></div>`).join('')}</div></section>`;
 }
 function guidePage(id) {
   const t = topics.find(t=>t.id===id) || topics[0];
