@@ -118,12 +118,13 @@ function forumPage(id) {
   const list=questions.filter(item=>currentFilter==='All'||item.category===currentFilter);
   const categories=['All',...new Set(questions.map(item=>item.category))];
   return `${heading(pacesContent.forum.title,'Q&A Forum · Knowledge sharing and non-urgent clarification.','SHARED LEARNING')}
-    <section class="article forum-purpose">${renderBlocks(pacesContent.forum.intro)}</section>
-    <section class="article question-panel"><h2>${escapeHTML(pacesContent.forum.formTitle)}</h2><p class="demo-form-note">Demo form: questions appear only in this browser session and are not sent to a CMP. Do not enter patient-identifiable information.</p>
-      <form id="question-form" class="question-form"><div class="form-row"><label><span id="question-role-label">Your role</span><select name="role" aria-labelledby="question-role-label" required><option value="">Select your role</option>${pacesContent.forum.roles.map(value=>`<option>${escapeHTML(value)}</option>`).join('')}</select></label><label><span id="question-category-label">Category</span><select name="category" aria-labelledby="question-category-label" required><option value="">Select a category</option>${pacesContent.forum.categories.map(value=>`<option>${escapeHTML(value)}</option>`).join('')}</select></label></div><label>Question<textarea name="question" rows="3" maxlength="2000" required></textarea></label><label>What information were you unable to find?<textarea name="missing" rows="2" maxlength="2000"></textarea></label><button type="submit" class="primary-button">Submit demo question</button></form>
+    <div class="forum-actions"><button type="button" class="primary-button forum-post-button" data-open-question aria-expanded="false" aria-controls="question-panel">${icon('message')}Post a new question</button><p>Demo only — questions are not saved or shared with others.</p></div>
+    <section class="article question-panel" id="question-panel" aria-labelledby="question-form-title" hidden><h2 id="question-form-title">${escapeHTML(pacesContent.forum.formTitle)}</h2><p class="demo-form-note">Demo form: questions appear only in this tab, disappear on refresh, and are not saved, synced, or sent to a CMP. Do not enter patient-identifiable information.</p>
+      <form id="question-form" class="question-form"><div class="form-row"><label><span id="question-role-label">Your role</span><select name="role" aria-labelledby="question-role-label" required><option value="">Select your role</option>${pacesContent.forum.roles.map(value=>`<option>${escapeHTML(value)}</option>`).join('')}</select></label><label><span id="question-category-label">Category</span><select name="category" aria-labelledby="question-category-label" required><option value="">Select a category</option>${pacesContent.forum.categories.map(value=>`<option>${escapeHTML(value)}</option>`).join('')}</select></label></div><label>Question<textarea name="question" rows="3" maxlength="2000" required></textarea></label><label>What information were you unable to find?<textarea name="missing" rows="2" maxlength="2000"></textarea></label><div class="form-actions"><button type="submit" class="primary-button">Post demo question</button><button type="button" class="secondary-button" data-cancel-question>Cancel</button></div></form>
     </section>
+    <section class="article forum-purpose">${renderBlocks(pacesContent.forum.intro)}</section>
     <h2 class="list-heading">Demo Q&A</h2>${questions.find(item=>item.id===id)?.local?'<p class="demo-form-note" role="status">Demo question added locally. It has not been sent to a CMP and will disappear when you reload this page.</p>':''}
-    ${filters(categories,currentFilter)}<div class="discussion-list">${list.map(item=>`<details class="discussion" ${id===item.id?'open':''}><summary>${icon('message')}<div><h2>${escapeHTML(item.title)}</h2><div class="discussion-meta"><span>Asked by: ${escapeHTML(item.author)}</span><span>${escapeHTML(item.status)}</span></div></div><span class="discussion-tag">${escapeHTML(item.category)}</span>${icon('chevron','chevron')}</summary><div class="discussion-answer">${item.missing?`<h3>Information not found</h3><p>${escapeHTML(item.missing)}</p>`:''}<h3>${item.local?'Response status':item.id==='bruising'?'CMP response':'Response'}</h3>${renderBlocks(item.answer)}${item.action?`<a class="text-button" href="${item.action.href}">${escapeHTML(item.action.text)} ${icon('arrow')}</a>`:''}</div></details>`).join('')}</div>`;
+    ${filters(categories,currentFilter)}<div class="discussion-list">${list.map(item=>`<details class="discussion" id="${item.id}" ${id===item.id?'open':''}><summary>${icon('message')}<div><h2>${escapeHTML(item.title)}</h2><div class="discussion-meta"><span>Asked by: ${escapeHTML(item.author)}</span><span>${escapeHTML(item.status)}</span></div></div><span class="discussion-tag">${escapeHTML(item.category)}</span>${icon('chevron','chevron')}</summary><div class="discussion-answer">${item.missing?`<h3>Information not found</h3><p>${escapeHTML(item.missing)}</p>`:''}<h3>${item.local?'Response status':item.id==='bruising'?'CMP response':'Response'}</h3>${renderBlocks(item.answer)}${item.action?`<a class="text-button" href="${item.action.href}">${escapeHTML(item.action.text)} ${icon('arrow')}</a>`:''}</div></details>`).join('')}</div>`;
 }
 function contactDetails(item) {
   return `<dl class="contact-details"><div><dt>Position</dt><dd>${escapeHTML(item.position)}</dd></div><div><dt>Phone number</dt><dd>${escapeHTML(item.phone)}</dd></div></dl>`;
@@ -208,11 +209,29 @@ function render() {
   const extraTitles={'for-nurses':'For Nurses','for-cmps':'For CMPs',updates:'Latest Updates'};
   document.title=`PACES | ${isSearch?'Search':extraTitles[route]||nav.find(n=>n[0]===route)?.[1]||'Home'}`;
   if(['resources','aar','contacts'].includes(route)&&id) openDetail(route,id);
-  const anchor=route==='care-guide'?section:['home','resources'].includes(route)?id:null;
+  const anchor=route==='care-guide'?section:['home','resources','forum'].includes(route)?id:null;
   if(anchor) requestAnimationFrame(()=>document.getElementById(anchor)?.scrollIntoView({block:'start'}));
 }
 document.querySelector('#search-form').addEventListener('submit',event=>{event.preventDefault();location.hash=`search?q=${encodeURIComponent(searchInput.value.trim())}`;});
 page.addEventListener('click',event=>{
+  const openQuestion=event.target.closest('[data-open-question]');
+  if(openQuestion){
+    const panel=document.querySelector('#question-panel');
+    panel.hidden=false;
+    openQuestion.setAttribute('aria-expanded','true');
+    panel.scrollIntoView({block:'start'});
+    panel.querySelector('[name="role"]').focus({preventScroll:true});
+  }
+  if(event.target.closest('[data-cancel-question]')){
+    const panel=document.querySelector('#question-panel');
+    const form=panel.querySelector('form');
+    form.reset();
+    form.elements.namedItem('question').setCustomValidity('');
+    panel.hidden=true;
+    const button=document.querySelector('[data-open-question]');
+    button.setAttribute('aria-expanded','false');
+    button.focus();
+  }
   const filter=event.target.closest('[data-filter]');
   if(filter){currentFilter=filter.dataset.filter;render();}
   const detail=event.target.closest('[data-detail]');

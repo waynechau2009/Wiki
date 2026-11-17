@@ -46,6 +46,14 @@ main:focus{outline:none}
 .discussion-meta{flex-wrap:wrap}
 .discussion-tag{max-width:180px;white-space:normal;line-height:1.5}
 .forum-purpose,.question-panel{margin-bottom:24px}
+.forum-actions,.form-actions{display:flex;align-items:center;flex-wrap:wrap;gap:14px}
+.forum-actions{margin-bottom:22px}
+.forum-actions p{font-size:13px;line-height:1.7;color:var(--muted);margin:0}
+.forum-post-button{display:inline-flex;align-items:center;gap:10px}
+.forum-post-button .icon{width:20px;height:20px}
+.secondary-button{border:1px solid #c9d8df;border-radius:6px;background:#fff;color:var(--navy);padding:12px 25px;font-size:14px;font-weight:600}
+.secondary-button:hover{background:#f0f6f8}
+.question-panel{scroll-margin-top:22px}
 .demo-form-note{font-size:13px;line-height:1.8;color:var(--muted);margin:12px 0 18px}
 .question-form{display:grid;gap:18px;margin-top:20px;max-width:900px}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:18px}
