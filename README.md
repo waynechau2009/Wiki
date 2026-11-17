@@ -1,6 +1,6 @@
 # PACES wiki pilot
 
-A responsive, dependency-free interface prototype based on the supplied PACES dashboard draft. Includes Home, Care Guide, Q&A Forum, AAR / Lessons Learnt, Resources, and Contacts, with shared navigation, searchable sample entries, category filters, expandable questions, and detail dialogs.
+A responsive, dependency-free PACES wiki with page content transcribed from the supplied `PACES Wiki.docx`. Includes Home, Care Guide and FAQ, For Nurses, For CMPs, Q&A Forum, AAR / Lessons Learnt, Resources, Contacts, and Latest Updates, with shared navigation, searchable content, category filters, expandable questions, and detail dialogs.
 
 ## Run
 
@@ -17,11 +17,11 @@ The app is static HTML, CSS, and JavaScript. `server.js` is a small development 
 
 ## Demo scope
 
-- Clinical entries, discussion responses, AARs, and contacts are clearly marked sample content awaiting local review.
+- `content.js` holds the supplied page copy, eight FAQs, three demo Q&As, AAR template and lessons log, clinical evidence citations, and demo updates. Clinical footer fields that the source does not provide are labelled “Not provided”; no review or approval is implied.
 - Contact cards and dialogs show fictitious names, positions, and eight-digit Hong Kong-style phone numbers as labelled placeholders. The dummy phone numbers are plain text, not dial links.
-- Search and filters operate on the sample entries in `app.js`.
-- Resources lists 17 supplied ICWM PDFs with linked titles and document version, issue date, and review date where stated. Effective dates are recorded separately; missing fields display “Not stated”. Original PDFs are stored in `assets/documents/` and can also be found through wiki search. The six sample resource entries remain under “Planned pilot resources”.
-- No authentication, database, patient data, posting, or contact messaging is implemented.
+- Search includes care articles, FAQ answers, Q&A responses, resources, audience pages, contacts, and updates, with a knowledge category on each result.
+- Resources lists 17 supplied ICWM PDFs with linked titles and document version, issue date, and review date where stated. Effective dates are recorded separately; missing fields display “Not stated”. Original PDFs are stored in `assets/documents/` and can also be found through wiki search. Project workflow and AAR entries link to the relevant wiki pages; other project files remain explicitly awaiting upload. No local policy or approved contact pathway is invented.
+- The Q&A submission form is a local demo: questions appear only in the current browser session, are never sent to a CMP, and disappear on reload. No authentication, database, server-side posting, or contact messaging is implemented. Do not enter patient-identifiable information.
 - The original mockup says PACES, so the interface uses that name. Branding is in `index.html`.
 - The ward illustration and icons are local SVG assets. System fonts work offline, with no external font or image requests.
 

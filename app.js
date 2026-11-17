@@ -28,19 +28,8 @@ const paths = {
 function icon(name, cls = '') { return `<svg class="icon ${cls}" viewBox="0 0 24 24" aria-hidden="true">${paths[name] || paths.file}</svg>`; }
 function escapeHTML(value) { return String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 const nav = [ ['home','Home','home'], ['care-guide','Care Guide','book'], ['forum','Q&A Forum','chat'], ['aar','AAR / Lessons Learnt','layers'], ['resources','Resources','folder'], ['contacts','Contacts','users'] ];
-const topics = [
-  { id:'observations', title:'Post-Acupuncture Observations', icon:'clipboard', description:'A shared reference for observation, documentation, and handover after treatment.', category:'For nurses', sections:['Observation checklist','Documentation and handover','Questions for the treating CMP'] },
-  { id:'reactions', title:'Common Mild Reactions', icon:'leaf', description:'A space for approved information on commonly reported post-treatment reactions.', category:'For nurses', sections:['Commonly reported reactions','Recording an observation','Discussing concerns with the CMP'] },
-  { id:'red-flags', title:'Red Flags & Escalation', icon:'alert', description:'Find the ward’s approved escalation pathway and responsible clinical contacts.', category:'For nurses', sections:['Recognising a concern','Local escalation pathway','Clinical contacts'] },
-  { id:'workflow', title:'Ward Workflow', icon:'workflow', description:'Connect treatment, nursing observations, documentation, and team communication.', category:'For everyone', sections:['Before and after treatment','Ward handover','Roles and responsibilities'] },
-  { id:'cmp', title:'CMP Practice Notes', icon:'mortar', description:'Common nurse queries, documentation points, and teaching pearls for ward staff.', category:'For CMPs', sections:['Common nurse queries','Documentation points','Teaching pearls for ward staff'] },
-];
-const questions = [
-  { id:'bruising', title:'Is mild bruising expected?', category:'Reactions', author:'Ward nurse', topic:'reactions', answer:'This sample discussion is awaiting a reviewed CMP response. The final entry will link to the approved guidance on post-acupuncture reactions.' },
-  { id:'dizziness', title:'When should dizziness be escalated?', category:'Escalation', author:'Ward nurse', topic:'red-flags', answer:'The pilot team will add the locally approved escalation guidance here. For an urgent patient concern, follow the existing clinical escalation pathway rather than waiting for a forum response.' },
-  { id:'handover', title:'Where can I find the handover note?', category:'Workflow', author:'Ward nurse', topic:'workflow', answer:'The ward’s agreed handover location and documentation process will be listed in Ward Workflow once confirmed by the pilot team.' },
-  { id:'bleeding', title:'How should minor bleeding be documented?', category:'Documentation', author:'Pilot team', topic:'observations', answer:'This example FAQ is awaiting the approved documentation standard. The pilot team will add the relevant template and responsible reviewer before clinical use.' },
-];
+const topics = pacesContent.topics;
+const questions = pacesContent.questions;
 const documentResources = [
   { id:'annex-5-1-3', annex:'5.1.3', title:'Protocol on Integrated Chinese-Western Medicine Programme in Cancer Palliative Care', filename:'Annex 5.1.3 Protocol on ICWM Programme in Cancer Palliative Care.pdf', category:'Guides', version:'10', issueDate:'07 Jul 2025', reviewDate:'07 Jul 2027', effectiveDate:'06 Aug 2025' },
   { id:'annex-5-1-4', annex:'5.1.4', title:'Protocol on Integrated Chinese-Western Medicine Programme for Cancer Treatment-induced Care', filename:'Annex 5.1.4 Protocol on ICWM Programme for Cancer Treatment-induced Care.pdf', category:'Guides', version:'2', issueDate:'29 Oct 2024', reviewDate:'29 Oct 2026', effectiveDate:'29 Oct 2024' },
@@ -60,20 +49,9 @@ const documentResources = [
   { id:'annex-5-19', annex:'5.19', title:'Acupuncture Checklist', filename:'Annex 5.19 Acupuncture Checklist.pdf', category:'Templates' },
   { id:'annex-5-21', annex:'5.21', title:'Guidelines for Good Practices in Chinese Medicine Medical Record Documentation', filename:'Annex 5.21 Guidelines for Good Practices in Chinese Medicine Medical Record Documentation.pdf', category:'Guides', version:'4.0' },
 ].map(item => ({ ...item, icon:'file', url:`assets/documents/${encodeURIComponent(item.filename)}`, description:`Annex ${item.annex} · ${item.category} · Full PDF document` }));
-const plannedResources = [
-  { id:'observation-sheet', title:'Post-treatment observation sheet', description:'A place for the ward’s approved observation and documentation template.', category:'Templates', icon:'clipboard' },
-  { id:'handover-template', title:'Ward handover template', description:'A shared format for nursing and CMP handover.', category:'Templates', icon:'file' },
-  { id:'workflow-map', title:'Pilot ward workflow', description:'The agreed pathway from treatment to observation and team handover.', category:'Guides', icon:'workflow' },
-  { id:'staff-introduction', title:'PACES staff introduction', description:'An introduction to the pilot, the knowledge hub, and how to contribute.', category:'Teaching', icon:'book' },
-  { id:'escalation-pathway', title:'Clinical escalation pathway', description:'A place for the existing, locally approved clinical escalation reference.', category:'Guides', icon:'alert' },
-  { id:'aar-template', title:'After-action review template', description:'Capture what happened, what was learnt, and what should change.', category:'Templates', icon:'layers' },
-];
+const plannedResources = pacesContent.projectDocuments.map(item => ({...item, category:'Project documents'}));
 const resources = [...documentResources, ...plannedResources];
-const reviews = [
-  { id:'handover-review', title:'Making the handover easier to find', description:'A sample review of how nurses and CMPs locate shared treatment notes.', category:'Workflow', icon:'workflow' },
-  { id:'questions-review', title:'Turning common questions into shared learning', description:'A sample review exploring how recurring ward questions become wiki entries.', category:'Team learning', icon:'chat' },
-  { id:'pilot-review', title:'First pilot ward reflection', description:'A space for the first team review of what worked well and what to improve.', category:'Pilot review', icon:'layers' },
-];
+const reviews = [{id:'pilot-review', title:pacesContent.aar.title, description:'Pilot after-action review template and demo lessons learnt log.', category:'AAR / Lessons Learnt', icon:'layers'}];
 const contacts = [
   { id:'nurse', title:'Oncology Ward Nurse In-charge', name:'Grace Chan', position:'Oncology Ward Nurse In-charge', phone:'2000 0001', description:'Ward coordination, nursing workflow, and local escalation arrangements.', icon:'nurse' },
   { id:'cmp-contact', title:'CMP Contact', name:'Dr. Raymond Wong', position:'Chinese Medicine Practitioner', phone:'2000 0002', description:'Treatment documentation, knowledge review, and non-urgent practice queries.', icon:'mortar' },
@@ -84,37 +62,73 @@ const dialog = document.querySelector('#detail-dialog');
 const searchInput = document.querySelector('#search-input');
 document.querySelector('#search-icon').innerHTML = icon('search');
 function heading(title, description, badge = 'ONCOLOGY WARD PILOT') { return `<div class="page-heading"><div><span class="eyebrow">PACES / KNOWLEDGE HUB</span><h1>${title}</h1><p>${description}</p></div><span class="page-badge">${badge}</span></div>`; }
-function note() { return '<p class="subpage-note">Pilot demo · Sample entries illustrate the layout. Clinical guidance and team details are awaiting local review.</p>'; }
+function renderBlocks(items = []) {
+  return items.map(block => {
+    if(block.type==='heading') return `<h${block.level || 3}>${escapeHTML(block.text)}</h${block.level || 3}>`;
+    if(block.type==='list'||block.type==='ordered') {
+      const tag=block.type==='ordered'?'ol':'ul';
+      return `<${tag}${block.start?` start="${block.start}"`:''}>${block.items.map(item=>`<li>${escapeHTML(typeof item==='string'?item:item.text)}${typeof item==='object'?renderBlocks(item.children):''}</li>`).join('')}</${tag}>`;
+    }
+    if(block.type==='links') return `<ul class="content-links">${block.items.map(item=>`<li><a href="${item.href}">${escapeHTML(item.text)} ${icon('arrow')}${item.description?`<span>${escapeHTML(item.description)}</span>`:''}</a></li>`).join('')}</ul>`;
+    if(block.type==='table') return `<div class="table-scroll" tabindex="0" aria-label="Lessons learnt log"><table><thead><tr>${block.headers.map(text=>`<th scope="col">${escapeHTML(text)}</th>`).join('')}</tr></thead><tbody>${block.rows.map(row=>`<tr>${row.map(text=>`<td>${escapeHTML(text)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+    return `<p>${escapeHTML(block.text)}</p>`;
+  }).join('');
+}
+function clinicalFooter() {
+  const footer=pacesContent.clinicalFooter;
+  return `<aside class="clinical-footer" aria-label="Clinical content information"><dl><div><dt>Evidence source</dt><dd><a href="#resources/clinical-evidence">See Clinical Evidence in Resources</a></dd></div>${[['Content owner',footer.owner],['Clinical reviewer',footer.reviewer],['Last reviewed',footer.lastReviewed],['Version',footer.version]].map(([label,value])=>`<div><dt>${label}</dt><dd>${escapeHTML(value)}</dd></div>`).join('')}</dl><p>${escapeHTML(footer.policy)}</p></aside>`;
+}
 function panel(title, symbol, items, options = {}) {
-  return `<section class="panel ${options.className || ''}"><div class="panel-head ${options.color || ''}">${icon(symbol)}<h2>${title}</h2>${options.more ? `<a class="view-more" href="${options.more}">View more ${icon('chevron')}</a>` : ''}</div><ul class="panel-list ${options.bullets ? 'bullet-list' : ''}">${items.map(item => `<li><a href="${item.href}">${options.bullets ? '<span class="bullet"></span>' : icon(item.icon || 'message')}<span>${item.title}</span></a></li>`).join('')}</ul></section>`;
+  return `<section class="panel ${options.className || ''}"><div class="panel-head ${options.color || ''}">${icon(symbol)}<h2>${escapeHTML(title)}</h2>${options.more ? `<a class="view-more" href="${options.more}">View more ${icon('chevron')}</a>` : ''}</div><ul class="panel-list ${options.bullets ? 'bullet-list' : ''}">${items.map(item => `<li><a href="${item.href}">${options.bullets ? '<span class="bullet"></span>' : icon(item.icon || 'message')}<span>${escapeHTML(item.title)}${item.meta?`<small>${escapeHTML(item.meta)}</small>`:''}</span></a></li>`).join('')}</ul></section>`;
 }
 function homePage() {
-  const quick = topics.slice(0,4).map(t => ({...t,href:`#care-guide/${t.id}`})).concat({title:'FAQ',icon:'help',href:'#forum'});
-  return `<section class="quick-access" aria-labelledby="quick-heading"><h1 id="quick-heading" class="section-heading">${icon('grid')}Quick Access<span class="section-meta">The knowledge you need, when you need it</span></h1><div class="quick-grid">${quick.map(t => `<a class="quick-card ${t.id === 'red-flags' ? 'danger' : ''}" href="${t.href}">${icon(t.icon)}<strong>${t.title}</strong>${icon('chevron','chevron')}</a>`).join('')}</div></section>
+  const quick = topics.slice(0,4).map(t => ({...t,href:`#care-guide/${t.id}`})).concat({title:'FAQ',icon:'help',href:'#care-guide/faq'});
+  const audienceLinks=key=>pacesContent[key].blocks.find(block=>block.type==='links').items.map(item=>({title:item.text,href:item.href}));
+  return `<section class="welcome article"><h1>${escapeHTML(pacesContent.home.title)}</h1>${renderBlocks(pacesContent.home.intro)}</section>
+  <section class="quick-access" aria-labelledby="quick-heading"><h2 id="quick-heading" class="section-heading">${icon('grid')}Quick Access<span class="section-meta">The knowledge you need, when you need it</span></h2><div class="quick-grid">${quick.map(t => `<a class="quick-card ${t.id === 'red-flags' ? 'danger' : ''}" href="${t.href}">${icon(t.icon)}<strong>${escapeHTML(t.title)}</strong>${icon('chevron','chevron')}</a>`).join('')}</div></section>
   <div class="dashboard-grid">
-    ${panel('For Nurses','nurse',[{title:'What to observe after treatment',href:'#care-guide/observations'},{title:'When to contact CMP',href:'#contacts/cmp-contact'},{title:'How to escalate urgent concerns',href:'#care-guide/red-flags'}],{bullets:true})}
-    ${panel('For CMPs','mortar',[{title:'Common nurse queries',href:'#forum'},{title:'Documentation points',href:'#care-guide/cmp'},{title:'Teaching pearls for ward staff',href:'#care-guide/cmp'}],{bullets:true,color:'mint'})}
+    ${panel('For Nurses','nurse',audienceLinks('forNurses'),{bullets:true,more:'#for-nurses'})}
+    ${panel('For CMPs','mortar',audienceLinks('forCMPs'),{bullets:true,color:'mint',more:'#for-cmps'})}
     ${panel('Q&A Forum','chat',questions.slice(0,3).map(q=>({title:q.title,href:`#forum/${q.id}`})),{more:'#forum'})}
-    ${panel('Latest Updates','megaphone',[{title:'New FAQ added: minor bleeding',href:'#forum/bleeding',icon:'file'},{title:'AAR summary uploaded',href:'#aar/handover-review',icon:'file'},{title:'Workflow updated for pilot ward',href:'#care-guide/workflow',icon:'file'}])}
+    ${panel('Latest Updates','megaphone',pacesContent.updates.entries.map(item=>({title:item.title,href:item.href,meta:item.date,icon:'file'})),{more:'#updates'})}
     ${panel('Key Contacts','users',contacts.map(c=>({title:c.title,href:`#contacts/${c.id}`,icon:'user'})))}
-    <section class="panel panel-note"><div class="panel-head cream">${icon('info')}<h2>Clinical Note</h2></div><p>PACES supports knowledge sharing and non-urgent clarification. <strong>For urgent patient concerns, follow the existing clinical escalation pathway.</strong></p></section>
+    <section class="panel panel-note" id="clinical-note"><div class="panel-head cream">${icon('info')}<h2>${escapeHTML(pacesContent.home.clinicalNote.title)}</h2></div><div class="clinical-note-content">${renderBlocks(pacesContent.home.clinicalNote.blocks)}</div></section>
   </div>
   <section class="knowledge-cycle" aria-label="Knowledge cycle"><div class="cycle-title">${icon('cycle')}<h2>Knowledge Cycle</h2></div><div class="cycle-steps">${[['Survey & Review','clipboard'],['Build Wiki','laptop'],['Use in Ward','bed'],['AAR / Q&A','chat'],['Update Wiki','cycle']].map((step,i)=>`${i ? '<span class="cycle-arrow" aria-hidden="true">→</span>' : ''}<div class="cycle-step">${icon(step[1])}<span>${step[0]}</span></div>`).join('')}</div></section>`;
 }
-function guidePage(id) {
-  const t = topics.find(t=>t.id===id) || topics[0];
-  return `${heading('Care Guide','A shared reference for consistent post-acupuncture care.')}<div class="guide-layout"><nav class="guide-sidebar" aria-label="Care guide topics">${topics.map(item=>`<a href="#care-guide/${item.id}" class="${t.id===item.id?'active':''}" ${t.id===item.id?'aria-current="page"':''}>${icon(item.icon)}${item.title}</a>`).join('')}</nav><article class="article"><span class="eyebrow">${t.category.toUpperCase()}</span><h2>${t.title}</h2><p>${t.description}</p>${t.sections.map(section=>`<h3>${section}</h3><p>Content for this section will be added by the PACES Pilot Team using the ward’s approved guidance.</p>`).join('')}<div class="callout">${t.id==='red-flags' ? 'For urgent patient concerns, follow the existing clinical escalation pathway. This wiki supports non-urgent knowledge sharing.' : 'This is a demonstration of the guide layout. Clinical content will be reviewed locally before use.'}</div><a class="text-button" href="${t.id==='red-flags'?'#contacts':'#forum'}">${t.id==='red-flags'?'View key contacts':'Explore related questions'} ${icon('arrow')}</a></article></div>${note()}`;
+function audiencePage(key) {
+  const content=pacesContent[key];
+  return `${heading(content.title,'Knowledge sharing for the oncology ward pilot.')}<article class="article">${renderBlocks(content.blocks)}</article>`;
+}
+function faqList(active) {
+  return `<div class="faq-list">${pacesContent.faq.map(item=>`<details class="discussion" id="${item.id}" ${active===item.id?'open':''}><summary>${icon('help')}<h3>${escapeHTML(item.title)}</h3>${icon('chevron','chevron')}</summary><div class="discussion-answer">${item.answers.map(text=>`<p>${escapeHTML(text)}</p>`).join('')}${item.topic!=='faq'?`<a class="text-button" href="#care-guide/${item.topic}">View related care guide ${icon('arrow')}</a>`:`<a class="text-button" href="#forum">Use the Q&A Forum ${icon('arrow')}</a>`}</div></details>`).join('')}</div>`;
+}
+function guidePage(id,section) {
+  if(id==='cmp') return audiencePage('forCMPs');
+  const topic=topics.find(item=>item.id===id);
+  const sidebar=`<nav class="guide-sidebar" aria-label="Care guide topics"><a href="#care-guide" ${!topic?'class="active" aria-current="page"':''}>${icon('book')}Overview</a>${topics.map(item=>`<a href="#care-guide/${item.id}" class="${topic?.id===item.id?'active':''}" ${topic?.id===item.id?'aria-current="page"':''}>${icon(item.icon)}${escapeHTML(item.title)}</a>`).join('')}</nav>`;
+  let body;
+  if(!topic) body=`<h2>${escapeHTML(pacesContent.careGuide.title)}</h2><p>${escapeHTML(pacesContent.careGuide.description)}</p>${renderBlocks([{type:'links',items:topics.map(item=>({text:item.title,description:item.description,href:`#care-guide/${item.id}`}))}])}`;
+  else body=`<span class="eyebrow">FOR NURSES &amp; CMPs</span><h2>${escapeHTML(topic.articleTitle || topic.title)}</h2><p>${escapeHTML(topic.description)}</p>${renderBlocks(topic.intro)}${topic.faq?faqList(section):topic.sections.map(item=>`<section class="article-section" id="${item.id}"><h3>${escapeHTML(item.title)}</h3>${renderBlocks(item.blocks)}</section>`).join('')}${topic.id==='observations'?'<h3>Evidence</h3><p>Clinical content informed by de Valois et al. (2024) and Bäumler et al. (2021).</p>':''}`;
+  return `${heading('Care Guide',pacesContent.careGuide.description)}<div class="guide-layout">${sidebar}<article class="article">${body}</article></div>`;
 }
 function filters(labels, active) { return `<div class="tabs" role="group" aria-label="Filter entries">${labels.map(label=>`<button type="button" class="filter-button ${label===active?'active':''}" data-filter="${label}" aria-pressed="${label===active}">${label}</button>`).join('')}</div>`; }
 let currentFilter = 'All';
 function forumPage(id) {
-  const list = questions.filter(q=>currentFilter==='All'||q.category===currentFilter);
-  return `${heading('Q&A Forum','Ask, share, and learn together. A space for non-urgent ward questions.','SHARED LEARNING')}${filters(['All','Reactions','Escalation','Workflow','Documentation'],currentFilter)}<div class="discussion-list">${list.map(q=>`<details class="discussion" ${id===q.id?'open':''}><summary>${icon('message')}<div><h2>${q.title}</h2><div class="discussion-meta"><span>${q.author}</span><span>Sample discussion</span></div></div><span class="discussion-tag">${q.category}</span>${icon('chevron','chevron')}</summary><div class="discussion-answer">${q.answer}<br><a class="text-button" href="#care-guide/${q.topic}">View related care guide ${icon('arrow')}</a></div></details>`).join('')}</div>${note()}`;
+  const list=questions.filter(item=>currentFilter==='All'||item.category===currentFilter);
+  const categories=['All',...new Set(questions.map(item=>item.category))];
+  return `${heading(pacesContent.forum.title,'Q&A Forum · Knowledge sharing and non-urgent clarification.','SHARED LEARNING')}
+    <section class="article forum-purpose">${renderBlocks(pacesContent.forum.intro)}</section>
+    <section class="article question-panel"><h2>${escapeHTML(pacesContent.forum.formTitle)}</h2><p class="demo-form-note">Demo form: questions appear only in this browser session and are not sent to a CMP. Do not enter patient-identifiable information.</p>
+      <form id="question-form" class="question-form"><div class="form-row"><label><span id="question-role-label">Your role</span><select name="role" aria-labelledby="question-role-label" required><option value="">Select your role</option>${pacesContent.forum.roles.map(value=>`<option>${escapeHTML(value)}</option>`).join('')}</select></label><label><span id="question-category-label">Category</span><select name="category" aria-labelledby="question-category-label" required><option value="">Select a category</option>${pacesContent.forum.categories.map(value=>`<option>${escapeHTML(value)}</option>`).join('')}</select></label></div><label>Question<textarea name="question" rows="3" maxlength="2000" required></textarea></label><label>What information were you unable to find?<textarea name="missing" rows="2" maxlength="2000"></textarea></label><button type="submit" class="primary-button">Submit demo question</button></form>
+    </section>
+    <h2 class="list-heading">Demo Q&A</h2>${questions.find(item=>item.id===id)?.local?'<p class="demo-form-note" role="status">Demo question added locally. It has not been sent to a CMP and will disappear when you reload this page.</p>':''}
+    ${filters(categories,currentFilter)}<div class="discussion-list">${list.map(item=>`<details class="discussion" ${id===item.id?'open':''}><summary>${icon('message')}<div><h2>${escapeHTML(item.title)}</h2><div class="discussion-meta"><span>Asked by: ${escapeHTML(item.author)}</span><span>${escapeHTML(item.status)}</span></div></div><span class="discussion-tag">${escapeHTML(item.category)}</span>${icon('chevron','chevron')}</summary><div class="discussion-answer">${item.missing?`<h3>Information not found</h3><p>${escapeHTML(item.missing)}</p>`:''}<h3>${item.local?'Response status':item.id==='bruising'?'CMP response':'Response'}</h3>${renderBlocks(item.answer)}${item.action?`<a class="text-button" href="${item.action.href}">${escapeHTML(item.action.text)} ${icon('arrow')}</a>`:''}</div></details>`).join('')}</div>`;
 }
 function contactDetails(item) {
   return `<dl class="contact-details"><div><dt>Position</dt><dd>${escapeHTML(item.position)}</dd></div><div><dt>Phone number</dt><dd>${escapeHTML(item.phone)}</dd></div></dl>`;
 }
-function cards(items, action, type) { return `<div class="content-cards">${items.map(item=>`<article class="content-card"><span class="card-icon">${icon(item.icon)}</span><div class="card-meta"><span>${item.category || 'PILOT TEAM'}</span><span>·</span><span>${type==='contacts'?'Placeholder contact':'Demo entry'}</span></div><h2>${escapeHTML(type==='contacts'?item.name:item.title)}</h2>${type==='contacts'?contactDetails(item):''}<p>${item.description}</p><button type="button" class="text-button" data-detail="${type}/${item.id}">${action} ${icon('arrow')}</button></article>`).join('')}</div>`; }
+function cards(items, action, type) { return `<div class="content-cards">${items.map(item=>`<article class="content-card"><span class="card-icon">${icon(item.icon)}</span><div class="card-meta"><span>${item.category || 'PILOT TEAM'}</span><span>·</span><span>${type==='contacts'?'Placeholder contact':type==='resources'?(item.href?'Project document':'Awaiting upload'):'Demo entry'}</span></div><h2>${escapeHTML(type==='contacts'?item.name:item.title)}</h2>${type==='contacts'?contactDetails(item):''}<p>${item.description}</p>${item.href?`<a class="text-button" href="${item.href}">Open entry ${icon('arrow')}</a>`:`<button type="button" class="text-button" data-detail="${type}/${item.id}">${action} ${icon('arrow')}</button>`}</article>`).join('')}</div>`; }
 function documentMetadata(item) {
   return `<dl class="document-metadata">${[['Version number',item.version],['Issue date',item.issueDate],['Review date',item.reviewDate]].map(([label,value])=>`<div><dt>${label}</dt><dd>${escapeHTML(value || 'Not stated')}</dd></div>`).join('')}</dl>`;
 }
@@ -122,23 +136,47 @@ function documentLink(item) {
   return `<a href="${item.url}" target="_blank" rel="noopener">${escapeHTML(item.title)}<span class="sr-only"> (PDF, opens in a new tab)</span></a>`;
 }
 function resourcePage() {
-  const matches = item => currentFilter==='All'||item.category===currentFilter;
-  const documents = documentResources.filter(matches);
-  const planned = plannedResources.filter(matches);
-  return `${heading('Resources','Protocols, guidelines, forms, and workflows. Select a document title to open the full PDF in a new tab.','SHARED LIBRARY')}${filters(['All','Guides','Templates','Teaching'],currentFilter)}
-    <p class="document-note">Versions and dates are taken from the documents. “Not stated” means that field is not specified. Effective dates are shown separately from issue dates.</p>
-    <p class="document-count">${documents.length} ${documents.length===1?'document':'documents'}</p>
-    <div class="document-list">${documents.map(item=>`<article class="document-entry"><div class="document-heading"><p class="document-reference">Annex ${item.annex} <span>· ${item.category} · PDF</span></p><h2>${documentLink(item)}</h2>${item.effectiveDate?`<p class="document-effective">Effective date: ${item.effectiveDate}</p>`:''}</div>${documentMetadata(item)}</article>`).join('')}</div>
-    ${!documents.length?'<p class="document-note">No PDF documents in this category.</p>':''}
-    ${planned.length?`<details class="planned-resources"><summary>Planned pilot resources (${planned.length})</summary><p class="document-note">Sample entries awaiting documents from the pilot team.</p>${cards(planned,'View planned resource','resources')}</details>`:''}`;
+  const matches=item=>currentFilter==='All'||item.category===currentFilter;
+  const documents=documentResources.filter(matches);
+  return `${heading('Resources','Clinical evidence, project documents, and supplied ICWM resources.','SHARED LIBRARY')}
+    <section class="article resource-section" id="clinical-evidence"><h2>Clinical Evidence</h2><div class="evidence-grid">${pacesContent.evidence.map(item=>`<section><h3>${escapeHTML(item.author)}</h3><p>${escapeHTML(item.title)}</p><h4>Relevant PACES topics</h4>${renderBlocks([{type:'list',items:item.topics}])}</section>`).join('')}</div></section>
+    <section class="resource-section" id="icwm-documents"><h2 class="list-heading">Supplied ICWM documents</h2><p class="document-note">Versions and dates are taken from the documents. “Not stated” means that field is not specified. Effective dates are shown separately from issue dates. Select a title to open the full PDF in a new tab.</p>${filters(['All','Guides','Templates'],currentFilter)}<p class="document-count">${documents.length} ${documents.length===1?'document':'documents'}</p><div class="document-list">${documents.map(item=>`<article class="document-entry"><div class="document-heading"><p class="document-reference">Annex ${item.annex} <span>· ${item.category} · PDF</span></p><h3>${documentLink(item)}</h3>${item.effectiveDate?`<p class="document-effective">Effective date: ${item.effectiveDate}</p>`:''}</div>${documentMetadata(item)}</article>`).join('')}</div></section>
+    <section class="resource-section" id="project-documents"><h2 class="list-heading">PACES Project Documents</h2>${cards(plannedResources,'View document status','resources')}</section>
+    <section class="article resource-section"><h2>${escapeHTML(pacesContent.localResources.title)}</h2><p>${escapeHTML(pacesContent.localResources.intro)}</p><h3>Examples awaiting local confirmation</h3>${renderBlocks([{type:'list',items:pacesContent.localResources.placeholders}])}<p>Only actual approved local documents should be used as local clinical policies.</p></section>`;
 }
-function aarPage() { return `${heading('AAR / Lessons Learnt','Reflect on ward experience. Turn shared learning into better ways of working.','CONTINUOUS LEARNING')}${cards(reviews,'Read review','aar')}<div class="callout">Our knowledge cycle: review experience, capture lessons, and use those lessons to update the wiki.</div>${note()}`; }
-function contactsPage() { return `${heading('Key Contacts','Find the right person for your question, feedback, or contribution.','PILOT TEAM')}<p class="contact-placeholder">All names and phone numbers below are fictitious placeholders for demonstration only.</p>${cards(contacts,'View contact details','contacts')}<div class="callout">For urgent patient concerns, use the existing clinical escalation pathway.</div>`; }
+function aarPage() {
+  return `${heading(pacesContent.aar.title,'AAR / Lessons Learnt · Review the pilot and identify improvements.','CONTINUOUS LEARNING')}<article class="article">${renderBlocks(pacesContent.aar.blocks)}</article>`;
+}
+function updatesPage() {
+  return `${heading(pacesContent.updates.title,'Changes to PACES content and the reasons behind them.')}<div class="updates-list">${pacesContent.updates.entries.map(item=>`<article class="article"><p class="eyebrow">${escapeHTML(item.date)}</p><h2><a href="${item.href}">${escapeHTML(item.title)}</a></h2><p>${escapeHTML(item.description)}</p><p class="update-meta">Source: supplied demo content · Reviewer: not provided</p></article>`).join('')}</div><article class="article">${renderBlocks(pacesContent.updates.blocks)}</article>`;
+}
+function contactsPage() {
+  const content=pacesContent.contacts;
+  return `${heading(content.title,'Find the right route for clinical concerns, workflow questions, and PACES suggestions.','PILOT TEAM')}<div class="callout contact-urgent"><strong>${escapeHTML(content.urgentTitle)}</strong><p>${escapeHTML(content.urgentText)}</p><p>Approved local pathway/contact: to be confirmed.</p></div><div class="contact-routing">${content.routes.map(item=>`<section class="article"><h2>${escapeHTML(item.title)}</h2><p>${item.href?`<a class="text-button" href="${item.href}">${escapeHTML(item.text)} ${icon('arrow')}</a>`:escapeHTML(item.text)}</p></section>`).join('')}</div><h2 class="list-heading">Demo contact placeholders</h2><p class="contact-placeholder">All names and phone numbers below are fictitious placeholders for demonstration only. They are not the confirmed local contacts above.</p>${cards(contacts,'View contact details','contacts')}`;
+}
+function contentText(value) {
+  if(typeof value==='string') return value;
+  if(Array.isArray(value)) return value.map(contentText).join(' ');
+  if(value&&typeof value==='object') return Object.values(value).map(contentText).join(' ');
+  return '';
+}
+function searchEntries() {
+  const entries=topics.map(item=>({...item,href:`#care-guide/${item.id}`,searchText:contentText([item.intro,item.sections])}));
+  topics.find(item=>item.id==='observations').sections.forEach(item=>entries.push({title:item.id==='dizziness'?'Dizziness after acupuncture':item.title,description:contentText(item.blocks[0]),category:'Post-Acupuncture Observations',relevantTo:'Nurses & CMPs',icon:'clipboard',href:`#care-guide/observations/${item.id}`,searchText:contentText(item.blocks)}));
+  pacesContent.faq.forEach(item=>entries.push({title:`FAQ: ${item.title}`,description:item.answers.join(' '),category:'FAQ',relevantTo:'Nurses & CMPs',icon:'help',href:`#care-guide/faq/${item.id}`}));
+  questions.forEach(item=>entries.push({title:`Q&A: ${item.title}`,description:contentText(item.answer),category:'Q&A Forum',relevantTo:'Nurses & CMPs',icon:'chat',href:`#forum/${item.id}`}));
+  resources.forEach(item=>entries.push({...item,href:item.href || `#resources/${item.id}`,category:item.annex?'ICWM documents':'Project documents'}));
+  reviews.forEach(item=>entries.push({...item,href:'#aar',searchText:contentText(pacesContent.aar.blocks)}));
+  contacts.forEach(item=>entries.push({...item,title:`${item.name} — ${item.title}`,description:`${item.position} · ${item.phone} · Placeholder contact. ${item.description}`,category:'Contacts',href:`#contacts/${item.id}`}));
+  [['forNurses','for-nurses'],['forCMPs','for-cmps']].forEach(([key,route])=>entries.push({title:pacesContent[key].title,description:'Knowledge sharing for the oncology ward pilot.',searchText:contentText(pacesContent[key].blocks),category:key==='forNurses'?'For Nurses':'For CMPs',icon:'users',href:`#${route}`}));
+  pacesContent.evidence.forEach(item=>entries.push({title:`${item.author} — ${item.title}`,description:item.topics.join(' '),category:'Clinical Evidence',icon:'book',href:'#resources/clinical-evidence'}));
+  entries.push({title:pacesContent.updates.title,description:'Demo updates and pilot update requirements.',searchText:contentText(pacesContent.updates),category:'Latest Updates',icon:'megaphone',href:'#updates'});
+  return entries;
+}
 function searchPage(query) {
-  const q = query.trim().toLowerCase();
-  const all = [...topics.map(t=>({...t,href:`#care-guide/${t.id}`})),...questions.map(t=>({...t,icon:'chat',description:t.answer,href:`#forum/${t.id}`})),...resources.map(t=>({...t,href:`#resources/${t.id}`})),...reviews.map(t=>({...t,href:`#aar/${t.id}`})),...contacts.map(t=>({...t,title:`${t.name} — ${t.title}`,description:`${t.position} · ${t.phone} · Placeholder contact. ${t.description}`,href:`#contacts/${t.id}`}))];
-  const results = q ? all.filter(t=>`${t.title} ${t.description} ${t.category || ''} ${t.filename || ''}`.toLowerCase().includes(q)) : [];
-  return `${heading('Search the wiki',q?`${results.length} ${results.length===1?'result':'results'} for “${escapeHTML(query)}”`:'Enter a topic, question, or keyword in the search bar.','KNOWLEDGE SEARCH')}${results.length?`<div class="content-cards">${results.map(t=>`<article class="content-card"><span class="card-icon">${icon(t.icon)}</span><h2>${t.title}</h2><p>${t.description}</p><a class="text-button" href="${t.href}">Open entry ${icon('arrow')}</a></article>`).join('')}</div>`:`<div class="empty-state">${icon('search')}<h2>${q?'No matching entries yet':'What would you like to find?'}</h2><p>${q?'Try “handover”, “observations”, or “workflow”.':'Search the care guide, questions, resources, and contacts.'}</p><a class="text-button" href="#home" style="justify-content:center">Back to home ${icon('arrow')}</a></div>`}`;
+  const q=query.trim().toLowerCase();
+  const results=q?searchEntries().filter(item=>contentText([item.title,item.description,item.category,item.filename,item.searchText]).toLowerCase().includes(q)):[];
+  return `${heading('Search PACES',q?`${results.length} ${results.length===1?'result':'results'} for “${escapeHTML(query)}”`:'Enter a topic, question, or keyword in the search bar.','KNOWLEDGE SEARCH')}${results.length?`<div class="content-cards">${results.map(item=>`<article class="content-card"><span class="card-icon">${icon(item.icon)}</span><div class="card-meta"><span>${escapeHTML(item.category || 'PACES')}</span></div><h2>${escapeHTML(item.title)}</h2>${item.relevantTo?`<p class="search-relevance">Relevant to: ${escapeHTML(item.relevantTo)}</p>`:''}<p>${escapeHTML(item.description)}</p><a class="text-button" href="${item.href}">Open entry ${icon('arrow')}</a></article>`).join('')}</div>`:`<div class="empty-state">${icon('search')}<h2>${q?'No matching entries':'What would you like to find?'}</h2><p>${q?'Try “dizziness”, “bleeding”, or “workflow”.':'Search the care guide, FAQ, Q&A, resources, and contacts.'}</p><a class="text-button" href="#home">Back to home ${icon('arrow')}</a></div>`}`;
 }
 function openDetail(type,id) {
   const collection = {resources,aar:reviews,contacts}[type];
@@ -147,8 +185,8 @@ function openDetail(type,id) {
   let body;
   if(item.url) body=`<p>${item.description}</p>${documentMetadata(item)}${item.effectiveDate?`<p class="document-effective">Effective date: ${item.effectiveDate}</p>`:''}<p class="document-note">“Not stated” means that field is not specified in the document.</p><a class="primary-button document-open" href="${item.url}" target="_blank" rel="noopener">Open full PDF <span class="sr-only">(opens in a new tab)</span>${icon('arrow')}</a>`;
   else if(type==='contacts') body=`${contactDetails(item)}<p>${item.description}</p><p class="contact-placeholder">This name and phone number are fictitious placeholders for demonstration only.</p>`;
-  else if(type==='aar') body=`<p>${item.description}</p>${['What happened?','What did we learn?','What will we change?'].map(s=>`<h3 style="margin:20px 0 7px;font-size:15px">${s}</h3><p>The pilot team’s reviewed reflection will appear here.</p>`).join('')}<div class="callout">Sample review layout · No actual case or patient information is included.</div>`;
-  else body=`<p>${item.description}</p><div class="callout"><strong>Resource awaiting upload</strong><br>This is a sample library entry. The pilot team will attach the reviewed document and record its owner, version, and review date here.</div>`;
+  else if(type==='aar') body=renderBlocks(pacesContent.aar.blocks);
+  else body=`<p>${escapeHTML(item.description)}</p><div class="callout"><strong>Project document awaiting upload</strong><br>No file has been supplied for this project document yet.</div>`;
   document.querySelector('#dialog-body').innerHTML=`<div class="dialog-content"><h2 id="dialog-title">${escapeHTML(type==='contacts'?item.name:item.title)}</h2>${body}</div>`;
   if(!dialog.open) dialog.showModal();
 }
@@ -156,7 +194,7 @@ let previousRoute = '';
 function render() {
   if(dialog.open) dialog.close();
   const hash = location.hash.slice(1) || 'home';
-  const [route,id] = hash.split('/');
+  const [route,id,section] = hash.split('/');
   if(route !== previousRoute) currentFilter='All';
   previousRoute=route;
   document.querySelector('#navigation').innerHTML=nav.map(([key,label,symbol])=>`<a href="#${key}" class="nav-link ${route===key?'active':''}" ${route===key?'aria-current="page"':''}>${icon(symbol)}<span>${label}</span></a>`).join('');
@@ -164,10 +202,14 @@ function render() {
   const isSearch = hash.startsWith('search?');
   if(isSearch) searchInput.value=query;
   else searchInput.value='';
-  const renderer = {home:homePage,'care-guide':()=>guidePage(id),forum:()=>forumPage(id),resources:resourcePage,aar:aarPage,contacts:contactsPage};
+  const renderer = {home:homePage,'care-guide':()=>guidePage(id,section),forum:()=>forumPage(id),resources:resourcePage,aar:aarPage,contacts:contactsPage,'for-nurses':()=>audiencePage('forNurses'),'for-cmps':()=>audiencePage('forCMPs'),updates:updatesPage};
   page.innerHTML=isSearch?searchPage(query):(renderer[route]||homePage)();
-  document.title=`PACES | ${isSearch?'Search':nav.find(n=>n[0]===route)?.[1]||'Home'}`;
+  if(!isSearch&&['home','care-guide','forum','for-nurses','for-cmps'].includes(route)) page.insertAdjacentHTML('beforeend',clinicalFooter());
+  const extraTitles={'for-nurses':'For Nurses','for-cmps':'For CMPs',updates:'Latest Updates'};
+  document.title=`PACES | ${isSearch?'Search':extraTitles[route]||nav.find(n=>n[0]===route)?.[1]||'Home'}`;
   if(['resources','aar','contacts'].includes(route)&&id) openDetail(route,id);
+  const anchor=route==='care-guide'?section:['home','resources'].includes(route)?id:null;
+  if(anchor) requestAnimationFrame(()=>document.getElementById(anchor)?.scrollIntoView({block:'start'}));
 }
 document.querySelector('#search-form').addEventListener('submit',event=>{event.preventDefault();location.hash=`search?q=${encodeURIComponent(searchInput.value.trim())}`;});
 page.addEventListener('click',event=>{
@@ -176,6 +218,22 @@ page.addEventListener('click',event=>{
   const detail=event.target.closest('[data-detail]');
   if(detail){const [type,id]=detail.dataset.detail.split('/');openDetail(type,id);}
 });
+let demoQuestionNumber=0;
+page.addEventListener('submit',event=>{
+  if(event.target.id!=='question-form') return;
+  event.preventDefault();
+  const form=event.target;
+  const fields=new FormData(form);
+  const question=String(fields.get('question') || '').trim();
+  const questionInput=form.elements.namedItem('question');
+  questionInput.setCustomValidity(question?'':'Please enter a question.');
+  if(!form.reportValidity()) return;
+  const item={id:`demo-question-${++demoQuestionNumber}`,title:question,author:String(fields.get('role')),category:String(fields.get('category')),status:'Demo — not sent',local:true,missing:String(fields.get('missing') || '').trim(),answer:[{type:'paragraph',text:'No response yet. This demo question has not been sent to a CMP.'}]};
+  questions.push(item);
+  currentFilter='All';
+  location.hash=`forum/${item.id}`;
+});
+page.addEventListener('input',event=>{if(event.target.name==='question') event.target.setCustomValidity('');});
 document.querySelector('#close-dialog').addEventListener('click',()=>dialog.close());
 document.querySelector('#dialog-done').addEventListener('click',()=>dialog.close());
 dialog.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dialog.close();}});
