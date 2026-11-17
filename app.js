@@ -41,7 +41,26 @@ const questions = [
   { id:'handover', title:'Where can I find the handover note?', category:'Workflow', author:'Ward nurse', topic:'workflow', answer:'The ward’s agreed handover location and documentation process will be listed in Ward Workflow once confirmed by the pilot team.' },
   { id:'bleeding', title:'How should minor bleeding be documented?', category:'Documentation', author:'Pilot team', topic:'observations', answer:'This example FAQ is awaiting the approved documentation standard. The pilot team will add the relevant template and responsible reviewer before clinical use.' },
 ];
-const resources = [
+const documentResources = [
+  { id:'annex-5-1-3', annex:'5.1.3', title:'Protocol on Integrated Chinese-Western Medicine Programme in Cancer Palliative Care', filename:'Annex 5.1.3 Protocol on ICWM Programme in Cancer Palliative Care.pdf', category:'Guides', version:'10', issueDate:'07 Jul 2025', reviewDate:'07 Jul 2027', effectiveDate:'06 Aug 2025' },
+  { id:'annex-5-1-4', annex:'5.1.4', title:'Protocol on Integrated Chinese-Western Medicine Programme for Cancer Treatment-induced Care', filename:'Annex 5.1.4 Protocol on ICWM Programme for Cancer Treatment-induced Care.pdf', category:'Guides', version:'2', issueDate:'29 Oct 2024', reviewDate:'29 Oct 2026', effectiveDate:'29 Oct 2024' },
+  { id:'annex-5-6', annex:'5.6', title:'Roles and Responsibilities of HA Nurse in Project on Integrated Chinese-Western Medicine (ICWM) Programmes', filename:'Annex 5.6 Roles and Responsibilities of HA Nurse in Project on ICWM Programmes.pdf', category:'Guides', version:'1.0', issueDate:'08 Dec 2023', reviewDate:'08 Dec 2026', effectiveDate:'08 Dec 2023' },
+  { id:'annex-5-7', annex:'5.7', title:'Clinical Incident Management in Integrated Chinese-Western Medicine Programme', filename:'Annex 5.7 Clinical Incident Management in ICWM Programme.pdf', category:'Guides' },
+  { id:'annex-5-8a', annex:'5.8a', title:'Patient Assessment Documentation Form (Cancer Palliative Care) — English', filename:'Annex 5.8a Patient Assessment Documentation Form(Cancer Palliative)_Eng.pdf', category:'Templates', effectiveDate:'06 Aug 2025' },
+  { id:'annex-5-8b', annex:'5.8b', title:'Patient Assessment Documentation Form (Cancer Palliative Care) — Chinese', filename:'Annex 5.8b Patient Assessment Documentation Form(Cancer Palliative)_Chi.pdf', category:'Templates', effectiveDate:'06 Aug 2025' },
+  { id:'annex-5-8g', annex:'5.8g', title:'Patient Assessment Documentation Form (Cancer Care) — English', filename:'Annex 5.8g Patient Assessment Documentation Form(Cancer Care)_Eng.pdf', category:'Templates', effectiveDate:'06 Aug 2025' },
+  { id:'annex-5-8h', annex:'5.8h', title:'Patient Assessment Documentation Form (Cancer Care) — Chinese', filename:'Annex 5.8h Patient Assessment Documentation Form(Cancer Care)_Chi.pdf', category:'Templates', effectiveDate:'06 Aug 2025' },
+  { id:'annex-5-9a', annex:'5.9a', title:'CM Informed Consent Form — English', filename:'Annex 5.9a CM Informed Consent Form_Eng.pdf', category:'Templates', effectiveDate:'29 Oct 2024' },
+  { id:'annex-5-10a', annex:'5.10a', title:'Notice to Patient (Inpatient) — English', filename:'Annex 5.10a Notice to Patient (Inpatient)_Eng.pdf', category:'Templates', effectiveDate:'29 Oct 2024' },
+  { id:'annex-5-10c', annex:'5.10c', title:'Notice to Patient (Cancer Care) — English', filename:'Annex 5.10c Notice to Patient (Cancer care)_Eng.pdf', category:'Templates', effectiveDate:'29 Oct 2024' },
+  { id:'annex-5-13', annex:'5.13', title:'CM Inpatient Summary', filename:'Annex 5.13 CM Inpatient Summary.pdf', category:'Templates' },
+  { id:'annex-5-14', annex:'5.14', title:'CMIS Workflow for CMCTR in Integrated Chinese-Western Medicine Programme', filename:'Annex 5.14 CMIS Workflow for CMCTR in ICWM Programme.pdf', category:'Guides' },
+  { id:'annex-5-15', annex:'5.15', title:'Chinese Medicine Consultation Note', filename:'Annex 5.15 Chinese Medicine Consultation Note.pdf', category:'Templates' },
+  { id:'annex-5-18', annex:'5.18', title:'Initial Assessment Checklist for Acupuncture', filename:'Annex 5.18 Initial Assessment Checklist for Acupuncture.pdf', category:'Templates' },
+  { id:'annex-5-19', annex:'5.19', title:'Acupuncture Checklist', filename:'Annex 5.19 Acupuncture Checklist.pdf', category:'Templates' },
+  { id:'annex-5-21', annex:'5.21', title:'Guidelines for Good Practices in Chinese Medicine Medical Record Documentation', filename:'Annex 5.21 Guidelines for Good Practices in Chinese Medicine Medical Record Documentation.pdf', category:'Guides', version:'4.0' },
+].map(item => ({ ...item, icon:'file', url:`assets/documents/${encodeURIComponent(item.filename)}`, description:`Annex ${item.annex} · ${item.category} · Full PDF document` }));
+const plannedResources = [
   { id:'observation-sheet', title:'Post-treatment observation sheet', description:'A place for the ward’s approved observation and documentation template.', category:'Templates', icon:'clipboard' },
   { id:'handover-template', title:'Ward handover template', description:'A shared format for nursing and CMP handover.', category:'Templates', icon:'file' },
   { id:'workflow-map', title:'Pilot ward workflow', description:'The agreed pathway from treatment to observation and team handover.', category:'Guides', icon:'workflow' },
@@ -49,6 +68,7 @@ const resources = [
   { id:'escalation-pathway', title:'Clinical escalation pathway', description:'A place for the existing, locally approved clinical escalation reference.', category:'Guides', icon:'alert' },
   { id:'aar-template', title:'After-action review template', description:'Capture what happened, what was learnt, and what should change.', category:'Templates', icon:'layers' },
 ];
+const resources = [...documentResources, ...plannedResources];
 const reviews = [
   { id:'handover-review', title:'Making the handover easier to find', description:'A sample review of how nurses and CMPs locate shared treatment notes.', category:'Workflow', icon:'workflow' },
   { id:'questions-review', title:'Turning common questions into shared learning', description:'A sample review exploring how recurring ward questions become wiki entries.', category:'Team learning', icon:'chat' },
@@ -92,13 +112,29 @@ function forumPage(id) {
   return `${heading('Q&A Forum','Ask, share, and learn together. A space for non-urgent ward questions.','SHARED LEARNING')}${filters(['All','Reactions','Escalation','Workflow','Documentation'],currentFilter)}<div class="discussion-list">${list.map(q=>`<details class="discussion" ${id===q.id?'open':''}><summary>${icon('message')}<div><h2>${q.title}</h2><div class="discussion-meta"><span>${q.author}</span><span>Sample discussion</span></div></div><span class="discussion-tag">${q.category}</span>${icon('chevron','chevron')}</summary><div class="discussion-answer">${q.answer}<br><a class="text-button" href="#care-guide/${q.topic}">View related care guide ${icon('arrow')}</a></div></details>`).join('')}</div>${note()}`;
 }
 function cards(items, action, type) { return `<div class="content-cards">${items.map(item=>`<article class="content-card"><span class="card-icon">${icon(item.icon)}</span><div class="card-meta"><span>${item.category || 'PILOT TEAM'}</span><span>·</span><span>Demo entry</span></div><h2>${item.title}</h2><p>${item.description}</p><button type="button" class="text-button" data-detail="${type}/${item.id}">${action} ${icon('arrow')}</button></article>`).join('')}</div>`; }
-function resourcePage() { return `${heading('Resources','Useful guides, templates, and teaching materials — all in one place.','SHARED LIBRARY')}${filters(['All','Guides','Templates','Teaching'],currentFilter)}${cards(resources.filter(r=>currentFilter==='All'||r.category===currentFilter),'View resource','resources')}${note()}`; }
+function documentMetadata(item) {
+  return `<dl class="document-metadata">${[['Version number',item.version],['Issue date',item.issueDate],['Review date',item.reviewDate]].map(([label,value])=>`<div><dt>${label}</dt><dd>${escapeHTML(value || 'Not stated')}</dd></div>`).join('')}</dl>`;
+}
+function documentLink(item) {
+  return `<a href="${item.url}" target="_blank" rel="noopener">${escapeHTML(item.title)}<span class="sr-only"> (PDF, opens in a new tab)</span></a>`;
+}
+function resourcePage() {
+  const matches = item => currentFilter==='All'||item.category===currentFilter;
+  const documents = documentResources.filter(matches);
+  const planned = plannedResources.filter(matches);
+  return `${heading('Resources','Protocols, guidelines, forms, and workflows. Select a document title to open the full PDF in a new tab.','SHARED LIBRARY')}${filters(['All','Guides','Templates','Teaching'],currentFilter)}
+    <p class="document-note">Versions and dates are taken from the documents. “Not stated” means that field is not specified. Effective dates are shown separately from issue dates.</p>
+    <p class="document-count">${documents.length} ${documents.length===1?'document':'documents'}</p>
+    <div class="document-list">${documents.map(item=>`<article class="document-entry"><div class="document-heading"><p class="document-reference">Annex ${item.annex} <span>· ${item.category} · PDF</span></p><h2>${documentLink(item)}</h2>${item.effectiveDate?`<p class="document-effective">Effective date: ${item.effectiveDate}</p>`:''}</div>${documentMetadata(item)}</article>`).join('')}</div>
+    ${!documents.length?'<p class="document-note">No PDF documents in this category.</p>':''}
+    ${planned.length?`<details class="planned-resources"><summary>Planned pilot resources (${planned.length})</summary><p class="document-note">Sample entries awaiting documents from the pilot team.</p>${cards(planned,'View planned resource','resources')}</details>`:''}`;
+}
 function aarPage() { return `${heading('AAR / Lessons Learnt','Reflect on ward experience. Turn shared learning into better ways of working.','CONTINUOUS LEARNING')}${cards(reviews,'Read review','aar')}<div class="callout">Our knowledge cycle: review experience, capture lessons, and use those lessons to update the wiki.</div>${note()}`; }
 function contactsPage() { return `${heading('Key Contacts','Find the right person for your question, feedback, or contribution.','PILOT TEAM')}${cards(contacts,'View contact details','contacts')}<div class="callout">For urgent patient concerns, use the existing clinical escalation pathway.</div>${note()}`; }
 function searchPage(query) {
   const q = query.trim().toLowerCase();
   const all = [...topics.map(t=>({...t,href:`#care-guide/${t.id}`})),...questions.map(t=>({...t,icon:'chat',description:t.answer,href:`#forum/${t.id}`})),...resources.map(t=>({...t,href:`#resources/${t.id}`})),...reviews.map(t=>({...t,href:`#aar/${t.id}`})),...contacts.map(t=>({...t,href:`#contacts/${t.id}`}))];
-  const results = q ? all.filter(t=>`${t.title} ${t.description} ${t.category || ''}`.toLowerCase().includes(q)) : [];
+  const results = q ? all.filter(t=>`${t.title} ${t.description} ${t.category || ''} ${t.filename || ''}`.toLowerCase().includes(q)) : [];
   return `${heading('Search the wiki',q?`${results.length} ${results.length===1?'result':'results'} for “${escapeHTML(query)}”`:'Enter a topic, question, or keyword in the search bar.','KNOWLEDGE SEARCH')}${results.length?`<div class="content-cards">${results.map(t=>`<article class="content-card"><span class="card-icon">${icon(t.icon)}</span><h2>${t.title}</h2><p>${t.description}</p><a class="text-button" href="${t.href}">Open entry ${icon('arrow')}</a></article>`).join('')}</div>`:`<div class="empty-state">${icon('search')}<h2>${q?'No matching entries yet':'What would you like to find?'}</h2><p>${q?'Try “handover”, “observations”, or “workflow”.':'Search the care guide, questions, resources, and contacts.'}</p><a class="text-button" href="#home" style="justify-content:center">Back to home ${icon('arrow')}</a></div>`}`;
 }
 function openDetail(type,id) {
@@ -106,7 +142,8 @@ function openDetail(type,id) {
   const item = collection?.find(item=>item.id===id);
   if(!item) return;
   let body;
-  if(type==='contacts') body=`<p>${item.description}</p><div class="callout"><strong>Contact details to be confirmed</strong><br>The pilot team will add the name, ward extension, availability, and preferred contact method here. No live contact details are included in this demo.</div>`;
+  if(item.url) body=`<p>${item.description}</p>${documentMetadata(item)}${item.effectiveDate?`<p class="document-effective">Effective date: ${item.effectiveDate}</p>`:''}<p class="document-note">“Not stated” means that field is not specified in the document.</p><a class="primary-button document-open" href="${item.url}" target="_blank" rel="noopener">Open full PDF <span class="sr-only">(opens in a new tab)</span>${icon('arrow')}</a>`;
+  else if(type==='contacts') body=`<p>${item.description}</p><div class="callout"><strong>Contact details to be confirmed</strong><br>The pilot team will add the name, ward extension, availability, and preferred contact method here. No live contact details are included in this demo.</div>`;
   else if(type==='aar') body=`<p>${item.description}</p>${['What happened?','What did we learn?','What will we change?'].map(s=>`<h3 style="margin:20px 0 7px;font-size:15px">${s}</h3><p>The pilot team’s reviewed reflection will appear here.</p>`).join('')}<div class="callout">Sample review layout · No actual case or patient information is included.</div>`;
   else body=`<p>${item.description}</p><div class="callout"><strong>Resource awaiting upload</strong><br>This is a sample library entry. The pilot team will attach the reviewed document and record its owner, version, and review date here.</div>`;
   document.querySelector('#dialog-body').innerHTML=`<div class="dialog-content"><h2 id="dialog-title">${item.title}</h2>${body}</div>`;

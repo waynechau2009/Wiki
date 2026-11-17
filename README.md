@@ -19,7 +19,7 @@ The app is static HTML, CSS, and JavaScript. `server.js` is a small development 
 
 - Clinical entries, discussion responses, AARs, and contacts are clearly marked sample content awaiting local review.
 - Search and filters operate on the sample entries in `app.js`.
-- Resource dialogs are placeholders; no approved documents are attached.
+- Resources lists 17 supplied ICWM PDFs with linked titles and document version, issue date, and review date where stated. Effective dates are recorded separately; missing fields display “Not stated”. Original PDFs are stored in `assets/documents/` and can also be found through wiki search. The six sample resource entries remain under “Planned pilot resources”.
 - No authentication, database, patient data, posting, or contact messaging is implemented.
 - The original mockup says PACES, so the interface uses that name. Branding is in `index.html`.
 - The ward illustration and icons are local SVG assets. System fonts work offline, with no external font or image requests.
