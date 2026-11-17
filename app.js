@@ -75,9 +75,9 @@ const reviews = [
   { id:'pilot-review', title:'First pilot ward reflection', description:'A space for the first team review of what worked well and what to improve.', category:'Pilot review', icon:'layers' },
 ];
 const contacts = [
-  { id:'nurse', title:'Oncology Ward Nurse In-charge', description:'Ward coordination, nursing workflow, and local escalation arrangements.', icon:'nurse' },
-  { id:'cmp-contact', title:'CMP Contact', description:'Treatment documentation, knowledge review, and non-urgent practice queries.', icon:'mortar' },
-  { id:'coordinator', title:'Pilot Coordinator', description:'Pilot feedback, wiki access, and content contributions.', icon:'users' },
+  { id:'nurse', title:'Oncology Ward Nurse In-charge', name:'Grace Chan', position:'Oncology Ward Nurse In-charge', phone:'2000 0001', description:'Ward coordination, nursing workflow, and local escalation arrangements.', icon:'nurse' },
+  { id:'cmp-contact', title:'CMP Contact', name:'Dr. Raymond Wong', position:'Chinese Medicine Practitioner', phone:'2000 0002', description:'Treatment documentation, knowledge review, and non-urgent practice queries.', icon:'mortar' },
+  { id:'coordinator', title:'Pilot Coordinator', name:'Emily Lee', position:'ICWM Programme Coordinator', phone:'2000 0003', description:'Pilot feedback, wiki access, and content contributions.', icon:'users' },
 ];
 const page = document.querySelector('#page-content');
 const dialog = document.querySelector('#detail-dialog');
@@ -111,7 +111,10 @@ function forumPage(id) {
   const list = questions.filter(q=>currentFilter==='All'||q.category===currentFilter);
   return `${heading('Q&A Forum','Ask, share, and learn together. A space for non-urgent ward questions.','SHARED LEARNING')}${filters(['All','Reactions','Escalation','Workflow','Documentation'],currentFilter)}<div class="discussion-list">${list.map(q=>`<details class="discussion" ${id===q.id?'open':''}><summary>${icon('message')}<div><h2>${q.title}</h2><div class="discussion-meta"><span>${q.author}</span><span>Sample discussion</span></div></div><span class="discussion-tag">${q.category}</span>${icon('chevron','chevron')}</summary><div class="discussion-answer">${q.answer}<br><a class="text-button" href="#care-guide/${q.topic}">View related care guide ${icon('arrow')}</a></div></details>`).join('')}</div>${note()}`;
 }
-function cards(items, action, type) { return `<div class="content-cards">${items.map(item=>`<article class="content-card"><span class="card-icon">${icon(item.icon)}</span><div class="card-meta"><span>${item.category || 'PILOT TEAM'}</span><span>·</span><span>Demo entry</span></div><h2>${item.title}</h2><p>${item.description}</p><button type="button" class="text-button" data-detail="${type}/${item.id}">${action} ${icon('arrow')}</button></article>`).join('')}</div>`; }
+function contactDetails(item) {
+  return `<dl class="contact-details"><div><dt>Position</dt><dd>${escapeHTML(item.position)}</dd></div><div><dt>Phone number</dt><dd>${escapeHTML(item.phone)}</dd></div></dl>`;
+}
+function cards(items, action, type) { return `<div class="content-cards">${items.map(item=>`<article class="content-card"><span class="card-icon">${icon(item.icon)}</span><div class="card-meta"><span>${item.category || 'PILOT TEAM'}</span><span>·</span><span>${type==='contacts'?'Placeholder contact':'Demo entry'}</span></div><h2>${escapeHTML(type==='contacts'?item.name:item.title)}</h2>${type==='contacts'?contactDetails(item):''}<p>${item.description}</p><button type="button" class="text-button" data-detail="${type}/${item.id}">${action} ${icon('arrow')}</button></article>`).join('')}</div>`; }
 function documentMetadata(item) {
   return `<dl class="document-metadata">${[['Version number',item.version],['Issue date',item.issueDate],['Review date',item.reviewDate]].map(([label,value])=>`<div><dt>${label}</dt><dd>${escapeHTML(value || 'Not stated')}</dd></div>`).join('')}</dl>`;
 }
@@ -130,10 +133,10 @@ function resourcePage() {
     ${planned.length?`<details class="planned-resources"><summary>Planned pilot resources (${planned.length})</summary><p class="document-note">Sample entries awaiting documents from the pilot team.</p>${cards(planned,'View planned resource','resources')}</details>`:''}`;
 }
 function aarPage() { return `${heading('AAR / Lessons Learnt','Reflect on ward experience. Turn shared learning into better ways of working.','CONTINUOUS LEARNING')}${cards(reviews,'Read review','aar')}<div class="callout">Our knowledge cycle: review experience, capture lessons, and use those lessons to update the wiki.</div>${note()}`; }
-function contactsPage() { return `${heading('Key Contacts','Find the right person for your question, feedback, or contribution.','PILOT TEAM')}${cards(contacts,'View contact details','contacts')}<div class="callout">For urgent patient concerns, use the existing clinical escalation pathway.</div>${note()}`; }
+function contactsPage() { return `${heading('Key Contacts','Find the right person for your question, feedback, or contribution.','PILOT TEAM')}<p class="contact-placeholder">All names and phone numbers below are fictitious placeholders for demonstration only.</p>${cards(contacts,'View contact details','contacts')}<div class="callout">For urgent patient concerns, use the existing clinical escalation pathway.</div>`; }
 function searchPage(query) {
   const q = query.trim().toLowerCase();
-  const all = [...topics.map(t=>({...t,href:`#care-guide/${t.id}`})),...questions.map(t=>({...t,icon:'chat',description:t.answer,href:`#forum/${t.id}`})),...resources.map(t=>({...t,href:`#resources/${t.id}`})),...reviews.map(t=>({...t,href:`#aar/${t.id}`})),...contacts.map(t=>({...t,href:`#contacts/${t.id}`}))];
+  const all = [...topics.map(t=>({...t,href:`#care-guide/${t.id}`})),...questions.map(t=>({...t,icon:'chat',description:t.answer,href:`#forum/${t.id}`})),...resources.map(t=>({...t,href:`#resources/${t.id}`})),...reviews.map(t=>({...t,href:`#aar/${t.id}`})),...contacts.map(t=>({...t,title:`${t.name} — ${t.title}`,description:`${t.position} · ${t.phone} · Placeholder contact. ${t.description}`,href:`#contacts/${t.id}`}))];
   const results = q ? all.filter(t=>`${t.title} ${t.description} ${t.category || ''} ${t.filename || ''}`.toLowerCase().includes(q)) : [];
   return `${heading('Search the wiki',q?`${results.length} ${results.length===1?'result':'results'} for “${escapeHTML(query)}”`:'Enter a topic, question, or keyword in the search bar.','KNOWLEDGE SEARCH')}${results.length?`<div class="content-cards">${results.map(t=>`<article class="content-card"><span class="card-icon">${icon(t.icon)}</span><h2>${t.title}</h2><p>${t.description}</p><a class="text-button" href="${t.href}">Open entry ${icon('arrow')}</a></article>`).join('')}</div>`:`<div class="empty-state">${icon('search')}<h2>${q?'No matching entries yet':'What would you like to find?'}</h2><p>${q?'Try “handover”, “observations”, or “workflow”.':'Search the care guide, questions, resources, and contacts.'}</p><a class="text-button" href="#home" style="justify-content:center">Back to home ${icon('arrow')}</a></div>`}`;
 }
@@ -143,10 +146,10 @@ function openDetail(type,id) {
   if(!item) return;
   let body;
   if(item.url) body=`<p>${item.description}</p>${documentMetadata(item)}${item.effectiveDate?`<p class="document-effective">Effective date: ${item.effectiveDate}</p>`:''}<p class="document-note">“Not stated” means that field is not specified in the document.</p><a class="primary-button document-open" href="${item.url}" target="_blank" rel="noopener">Open full PDF <span class="sr-only">(opens in a new tab)</span>${icon('arrow')}</a>`;
-  else if(type==='contacts') body=`<p>${item.description}</p><div class="callout"><strong>Contact details to be confirmed</strong><br>The pilot team will add the name, ward extension, availability, and preferred contact method here. No live contact details are included in this demo.</div>`;
+  else if(type==='contacts') body=`${contactDetails(item)}<p>${item.description}</p><p class="contact-placeholder">This name and phone number are fictitious placeholders for demonstration only.</p>`;
   else if(type==='aar') body=`<p>${item.description}</p>${['What happened?','What did we learn?','What will we change?'].map(s=>`<h3 style="margin:20px 0 7px;font-size:15px">${s}</h3><p>The pilot team’s reviewed reflection will appear here.</p>`).join('')}<div class="callout">Sample review layout · No actual case or patient information is included.</div>`;
   else body=`<p>${item.description}</p><div class="callout"><strong>Resource awaiting upload</strong><br>This is a sample library entry. The pilot team will attach the reviewed document and record its owner, version, and review date here.</div>`;
-  document.querySelector('#dialog-body').innerHTML=`<div class="dialog-content"><h2 id="dialog-title">${item.title}</h2>${body}</div>`;
+  document.querySelector('#dialog-body').innerHTML=`<div class="dialog-content"><h2 id="dialog-title">${escapeHTML(type==='contacts'?item.name:item.title)}</h2>${body}</div>`;
   if(!dialog.open) dialog.showModal();
 }
 let previousRoute = '';

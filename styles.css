@@ -17,6 +17,11 @@
  footer{font-size:11px}.content-card p,.article p,.article li,.discussion-answer{font-size:14px}
 }
 main:focus{outline:none}
+.contact-placeholder{font-size:13px;line-height:1.7;color:var(--muted);margin:0 0 20px}
+.contact-details{display:grid;gap:14px;margin:18px 0 20px}
+.contact-details dt{font-size:11px;line-height:1.5;font-weight:700;color:var(--muted);margin-bottom:5px}
+.contact-details dd{font-size:15px;line-height:1.6;color:var(--ink);margin:0;overflow-wrap:anywhere}
+.dialog-content .contact-placeholder{margin-top:18px}
 .document-note{font-size:13px;line-height:1.7;color:var(--muted);margin:0 0 16px;max-width:900px}
 .document-count{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:12px}
 .document-list{display:grid;gap:12px}

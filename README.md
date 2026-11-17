@@ -18,6 +18,7 @@ The app is static HTML, CSS, and JavaScript. `server.js` is a small development 
 ## Demo scope
 
 - Clinical entries, discussion responses, AARs, and contacts are clearly marked sample content awaiting local review.
+- Contact cards and dialogs show fictitious names, positions, and eight-digit Hong Kong-style phone numbers as labelled placeholders. The dummy phone numbers are plain text, not dial links.
 - Search and filters operate on the sample entries in `app.js`.
 - Resources lists 17 supplied ICWM PDFs with linked titles and document version, issue date, and review date where stated. Effective dates are recorded separately; missing fields display “Not stated”. Original PDFs are stored in `assets/documents/` and can also be found through wiki search. The six sample resource entries remain under “Planned pilot resources”.
 - No authentication, database, patient data, posting, or contact messaging is implemented.
