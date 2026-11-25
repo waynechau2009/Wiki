@@ -48,7 +48,7 @@ const documentResources = [
   { id:'annex-5-18', annex:'5.18', title:'Initial Assessment Checklist for Acupuncture', filename:'Annex 5.18 Initial Assessment Checklist for Acupuncture.pdf', category:'Templates' },
   { id:'annex-5-19', annex:'5.19', title:'Acupuncture Checklist', filename:'Annex 5.19 Acupuncture Checklist.pdf', category:'Templates' },
   { id:'annex-5-21', annex:'5.21', title:'Guidelines for Good Practices in Chinese Medicine Medical Record Documentation', filename:'Annex 5.21 Guidelines for Good Practices in Chinese Medicine Medical Record Documentation.pdf', category:'Guides', version:'4.0' },
-].map(item => ({ ...item, icon:'file', url:`assets/documents/${encodeURIComponent(item.filename)}`, description:`Annex ${item.annex} · ${item.category} · Full PDF document` }));
+].map(item => ({ ...item, icon:'file', description:`Annex ${item.annex} · ${item.category} · Document reference` }));
 const plannedResources = pacesContent.projectDocuments.map(item => ({...item, category:'Project documents'}));
 const resources = [...documentResources, ...plannedResources];
 const reviews = [{id:'pilot-review', title:pacesContent.aar.title, description:'Pilot after-action review template and demo lessons learnt log.', category:'AAR / Lessons Learnt', icon:'layers'}];
@@ -133,15 +133,12 @@ function cards(items, action, type) { return `<div class="content-cards">${items
 function documentMetadata(item) {
   return `<dl class="document-metadata">${[['Version number',item.version],['Issue date',item.issueDate],['Review date',item.reviewDate]].map(([label,value])=>`<div><dt>${label}</dt><dd>${escapeHTML(value || 'Not stated')}</dd></div>`).join('')}</dl>`;
 }
-function documentLink(item) {
-  return `<a href="${item.url}" target="_blank" rel="noopener">${escapeHTML(item.title)}<span class="sr-only"> (PDF, opens in a new tab)</span></a>`;
-}
 function resourcePage() {
   const matches=item=>currentFilter==='All'||item.category===currentFilter;
   const documents=documentResources.filter(matches);
   return `${heading('Resources','Clinical evidence, project documents, and supplied ICWM resources.','SHARED LIBRARY')}
     <section class="article resource-section" id="clinical-evidence"><h2>Clinical Evidence</h2><div class="evidence-grid">${pacesContent.evidence.map(item=>`<section><h3>${escapeHTML(item.author)}</h3><p>${escapeHTML(item.title)}</p><h4>Relevant PACES topics</h4>${renderBlocks([{type:'list',items:item.topics}])}</section>`).join('')}</div></section>
-    <section class="resource-section" id="icwm-documents"><h2 class="list-heading">Supplied ICWM documents</h2><p class="document-note">Versions and dates are taken from the documents. “Not stated” means that field is not specified. Effective dates are shown separately from issue dates. Select a title to open the full PDF in a new tab.</p>${filters(['All','Guides','Templates'],currentFilter)}<p class="document-count">${documents.length} ${documents.length===1?'document':'documents'}</p><div class="document-list">${documents.map(item=>`<article class="document-entry"><div class="document-heading"><p class="document-reference">Annex ${item.annex} <span>· ${item.category} · PDF</span></p><h3>${documentLink(item)}</h3>${item.effectiveDate?`<p class="document-effective">Effective date: ${item.effectiveDate}</p>`:''}</div>${documentMetadata(item)}</article>`).join('')}</div></section>
+    <section class="resource-section" id="icwm-documents"><h2 class="list-heading">ICWM document references</h2><p class="document-note">Versions and dates are taken from the documents. “Not stated” means that field is not specified. Effective dates are shown separately from issue dates. Files are not available on this site.</p>${filters(['All','Guides','Templates'],currentFilter)}<p class="document-count">${documents.length} ${documents.length===1?'document':'documents'}</p><div class="document-list">${documents.map(item=>`<article class="document-entry"><div class="document-heading"><p class="document-reference">Annex ${item.annex} <span>· ${item.category}</span></p><h3>${escapeHTML(item.title)}</h3>${item.effectiveDate?`<p class="document-effective">Effective date: ${item.effectiveDate}</p>`:''}</div>${documentMetadata(item)}</article>`).join('')}</div></section>
     <section class="resource-section" id="project-documents"><h2 class="list-heading">PACES Project Documents</h2>${cards(plannedResources,'View document status','resources')}</section>
     <section class="article resource-section"><h2>${escapeHTML(pacesContent.localResources.title)}</h2><p>${escapeHTML(pacesContent.localResources.intro)}</p><h3>Examples awaiting local confirmation</h3>${renderBlocks([{type:'list',items:pacesContent.localResources.placeholders}])}<p>Only actual approved local documents should be used as local clinical policies.</p></section>`;
 }
@@ -184,7 +181,7 @@ function openDetail(type,id) {
   const item = collection?.find(item=>item.id===id);
   if(!item) return;
   let body;
-  if(item.url) body=`<p>${item.description}</p>${documentMetadata(item)}${item.effectiveDate?`<p class="document-effective">Effective date: ${item.effectiveDate}</p>`:''}<p class="document-note">“Not stated” means that field is not specified in the document.</p><a class="primary-button document-open" href="${item.url}" target="_blank" rel="noopener">Open full PDF <span class="sr-only">(opens in a new tab)</span>${icon('arrow')}</a>`;
+  if(item.annex) body=`<p>${item.description}</p>${documentMetadata(item)}${item.effectiveDate?`<p class="document-effective">Effective date: ${item.effectiveDate}</p>`:''}<p class="document-note">“Not stated” means that field is not specified in the document. No file is linked to this reference.</p>`;
   else if(type==='contacts') body=`${contactDetails(item)}<p>${item.description}</p><p class="contact-placeholder">This name and phone number are fictitious placeholders for demonstration only.</p>`;
   else if(type==='aar') body=renderBlocks(pacesContent.aar.blocks);
   else body=`<p>${escapeHTML(item.description)}</p><div class="callout"><strong>Project document awaiting upload</strong><br>No file has been supplied for this project document yet.</div>`;
